@@ -4,8 +4,10 @@ path="perfect/1.bmp"
 
 #Функция поворота изображения на заданный угол
 def rotation(img, angle):
+	#Узнаем размеры исходного изображения
+	width, height = img.size
 	#Создаем шаблон белого фона
-	dst_img = Image.new("L", (240,320), "white" )
+	dst_img = Image.new("L", (width, height), "white" )
 	#Поворачиваем исходное изображение
 	img = img.rotate(angle)
 	#Подставляем измененное изображение на фон
