@@ -11,7 +11,7 @@ def transfer(img, width_percent, height_percent):
 	new_width=int(width*width_percent/100)
 	new_height=int(height*height_percent/100)
 	#Переносим изображение относительно фона
-	dst_img.paste(img, (120-int((new_width+width)/2), 160-int((new_height+height)/2)), img)
+	dst_img.paste(img, (int(new_width/2), int(new_height/2)), img)
 	return(dst_img)
 
 #Открываем исходное изображение		

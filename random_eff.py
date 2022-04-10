@@ -1,12 +1,24 @@
 import random
 from PIL import Image, ImageFilter, ImageEnhance
 
+#НАСТРОЙКИ-----------------------
+shift_level = 60            # максимальный уровень сдвига в процентах
+rotation_level = 10         # предельный угол поворота в градусах
+compr_stretch_level_x = 20  # максимальное сжатие по x в процентах от ширины 
+compr_stretch_level_y = 20  # максимальное сжатие по y в процентах от длины
+transfer_level = 20         # максимальный перенос в процентах от размеров
+noise_quantity = 60         # количество шума в процентах от количества пикселей 
+noise_deviation= 80         # степень отклонения яркости цвета в шуме от 0 до 255
+brightness_level= 50        # максимальный уровень изменения яркости в процентах
+blur_level=100               # максимальный уровень размытия в процентах
+#--------------------------------
+
 #Путь до картинки
 path="perfect/9.bmp"
 
 #Функция размытия изображения
 def blur(img,percent):
-	return(img.filter(ImageFilter.BoxBlur(int(13*percent/100))))
+	return(img.filter(ImageFilter.BoxBlur(int(16*percent/100))))
 
 #Функция поворота изображения на заданный угол
 def rotation(img, angle):
@@ -32,7 +44,7 @@ def compr_stretch(img, width_percent, height_percent):
 	#Меняем размер исходного изображения
 	img = img.resize((new_width, new_height))
 	#Подставляем измененное изображение на фон
-	dst_img.paste(img, (120-int(new_width/2), 160-int(new_height/2)), img)
+	dst_img.paste(img, (int((width-new_width)/2), int((height-new_height)/2)), img)
 	return(dst_img)
 
 #Функция параллельного переноса картинки в процентном соотношении от размеров
@@ -45,7 +57,7 @@ def transfer(img, width_percent, height_percent):
 	new_width=int(width*width_percent/100)
 	new_height=int(height*height_percent/100)
 	#Переносим изображение относительно фона
-	dst_img.paste(img, (120-int((new_width+width)/2), 160-int((new_height+height)/2)), img)
+	dst_img.paste(img, (int(new_width/2), int(new_height/2)), img)
 	return(dst_img)
 
 #Функция изменения яркости factor от 0.5 до 1.5
@@ -54,61 +66,59 @@ def brightness(img, factor):
 	return(enhancer.enhance(factor))
 
 #Функция добавления случайного шума, степень зашумленности от 0 до 50000
-def noise(img, level):
-	for numpix in range(0, level):
+def noise(img, noise_quantity, noise_deviation):
+	#Узнаем размеры исходного изображения
+	width, height = img.size
+	for numpix in range(0, int(noise_quantity*width*height/100)):
+		#Случайный пиксель
 		x=random.randint(2,int(img.size[0]-3))
 		y=random.randint(2,int(img.size[1]-3))
-		r,g,b = img.getpixel((x, y))
-		r=random.randint(r-50,r+50)
-		g=random.randint(g-50,g+50)
-		b=random.randint(b-50,b+50)
-		for x_1 in range(x-random.randint(0,2),x+random.randint(0,2)):
+		#Узнаем яркость
+		bright = img.getpixel((x, y))
+		#Случайно меняем яркость в заданном пределе
+		bright=random.randint(bright-noise_deviation,bright+noise_deviation)
+		#Меняем яркость квадрата со сторонами 1/50 от длины и ширины изображения с пикселем в центре
+		for x_1 in range(x-random.randint(0,int(width/150)),x+random.randint(0,int(height/150))):
 			for y_1 in range(y-random.randint(0,2),y+random.randint(0,2)):
-				img.putpixel((x_1,y_1),(r,g,b))
+				img.putpixel((x_1,y_1),bright)
 	return(img)
 
-def shift(img, level_x, level_y):
-	img = img.convert('RGB')
-	width = img.size[0]
-	height = int(img.size[1])
-	i=0
+#Функция сдвига вдоль x
+def shift(img, level):
+	img = img.convert('L')
+	width, height = img.size
+	level = int(width/2*level/100)
 	j=0
-	if(level_x<=0): i=-level_x
-	if(level_y<=0): j=-level_y
+	if(level<=0): j=-level
 	#Сдвигаем по x
 	for x in range(0, int(img.size[0])):
 		for y in range(0,int(img.size[1])):
-			r,g,b=img.getpixel((x, y))
-			img.putpixel((x-j-int(level_y*y/height),y),(r,g,b))
-	#Сдвигаем по y		
-	for x in range(0, int(img.size[0])):
-		for y in range(0,int(img.size[1])):
-			r,g,b=img.getpixel((x, y))
-			img.putpixel((x,y-i-int(level_x*x/width)),(r,g,b))
+			bright=img.getpixel((x, y))
+			img.putpixel((x-j-int(level*y/height),y),bright)
+	
 	#Теперь центрируем
 	#Узнаем размеры исходного изображения
 	width, height = img.size
 	img = img.convert('RGBA')
 	#Создаем шаблон белого фона
 	dst_img = Image.new("L", (width, height), "white" )
-	dst_img.paste(img, (j+int(level_y/2), i+int(level_x/2)), img)
+	dst_img.paste(img, (j+int(level/2), 0), img)
 	return(dst_img)
 
 #Открываем исходное изображение	
-for i in range(1,20):
+for i in range(0,20):
 	img = Image.open(path)
-	img = shift(img, random.randint(-50, 50), random.randint(-50, 50))
+	img = shift(img, random.randint(-shift_level, shift_level))
 	img = img.convert('RGBA')
-	img = rotation(img, random.randint(-10, 10))
+	img = rotation(img, random.randint(-rotation_level, rotation_level))
 	img = img.convert('RGBA')
-	img = compr_stretch(img, random.randint(-20, 20), random.randint(-20, 20))
+	img = compr_stretch(img, random.randint(-compr_stretch_level_x, compr_stretch_level_x), random.randint(-compr_stretch_level_y, compr_stretch_level_y))
 	img = img.convert('RGBA')
-	img = transfer(img, random.randint(-20, 20), random.randint(-20, 20))
-	img = img.convert('RGB')
-	img = noise(img, random.randint(0, 50000))
-	img = img.convert('RGBA')
-	img = brightness(img, random.randint(5, 15)/10)
-	img = blur(img, random.randint(0, 100))
+	img = transfer(img, random.randint(-transfer_level, transfer_level), random.randint(-transfer_level, transfer_level))
+	img = img.convert('L')
+	img = noise(img, random.randint(0, noise_quantity), noise_deviation)
+	img = brightness(img, random.randint(100-brightness_level, 100+brightness_level)/100)
+	img = blur(img, random.randint(0, blur_level))
 	img = img.convert('L')
 	path2='tests/'+str(i)+'.png'
 	img.save(path2)
