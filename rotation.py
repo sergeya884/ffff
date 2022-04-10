@@ -1,6 +1,6 @@
 from PIL import Image
 #Путь до картинки
-path="perfect/1.bmp"
+path="perfect/28.jpg"
 
 #Функция поворота изображения на заданный угол
 def rotation(img, angle):
