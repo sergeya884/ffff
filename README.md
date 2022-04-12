@@ -10,7 +10,7 @@
 
 Примеры вывода (слабые настройки аугментации):
 
-![](https://github.com/sergeya884/img_augmentation/blob/main/photo/1.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/2.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/3.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/4.png)
+![](https://github.com/sergeya884/img_augmentation/blob/main/photo/1.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/2.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/3.png)
 
 Все, что касается классификатора в папке classifier.
 
