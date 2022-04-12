@@ -1,5 +1,6 @@
 import random
 import os
+import sys
 from PIL import Image, ImageFilter, ImageEnhance
 
 #НАСТРОЙКИ-----------------------
@@ -109,40 +110,58 @@ def shift(img, level):
     dst_img.paste(img, (j + level//2, 0), img)
     return(dst_img)
 
-# Путь до картинки
-path = input("Введите путь до файла: ")
-# Узнаем имя класса как название файла
-name = os.path.splitext(os.path.basename(path))[0]
-# Создаем папку для изображений класса
-path2 = "number/" + name + "/"
-os.mkdir(path2)
-# Создаем основу для будущего пути до картинки
-path2 = path2 + name + "_0000"
-j=10
+# Функция для вывода с заменой старой информации
+def update_msg(text):
+    message = f'\r{text}'
+    sys.stdout.write(message)
+    sys.stdout.flush()
 
-# Циклическое сохранение случайно измененных параметров
-for i in range(1,int(input("Введите число изменненых изображений: "))+1):
-    img = Image.open(path)
-    img = img.resize((width, height))
-    img = shift(img, random.randint(-shift_level, shift_level))
-    img = rotation(img, random.randint(-rotation_level, rotation_level))
-    img = compr_stretch(img, random.randint(-compr_stretch_level_x, compr_stretch_level_x), random.randint(-compr_stretch_level_y, compr_stretch_level_y))
-    img = transfer(img, random.randint(-transfer_level, transfer_level), random.randint(-transfer_level, transfer_level))
-    img = noise(img, random.randint(0, noise_quantity), noise_deviation)
-    img = brightness(img, random.randint(100-brightness_level, 100+brightness_level))
-    img = blur(img, random.randint(0, blur_level))
-    img = img.convert('L')
+
+path = input("Введите путь до изображений: ")
+number_of_images = int(input("Введите число изменненых изображений: "))+1;
+
+for filename in os.listdir(path):
+    # Узнаем имя класса как название файла
+    name = os.path.splitext(filename)[0]
+    print("\nкласс:", name)
+    # Создаем папку для изображений класса
+    path2 = "numbers/" + name + "/"
+    os.mkdir(path2)
+    # Создаем основу для будущего пути до картинки
+    path2 = path2 + name + "_0000"
+    j=10
     
-    # Каждую степень 10 нам надо убрать ноль в имени класса
-    if i == j:
-        j*=10
-        path2 = path2[:-1]
-        # Заодно выводим кол-во готовых картинок
-        print(i, "фото готово")
-    
-    # Сохраняем изображение
-    path3 = path2 + str(i) + '.png'
-    img.save(path3)
+    # Переменные для вывода процента готовности
+    ready = number_of_images//100
+    ready_percent = 0
+
+    # Циклическое сохранение случайно измененных параметров
+    for i in range(1, number_of_images):
+        img = Image.open(path + filename)
+        img = img.resize((width, height))
+        img = shift(img, random.randint(-shift_level, shift_level))
+        img = rotation(img, random.randint(-rotation_level, rotation_level))
+        img = compr_stretch(img, random.randint(-compr_stretch_level_x, compr_stretch_level_x), random.randint(-compr_stretch_level_y, compr_stretch_level_y))
+        img = transfer(img, random.randint(-transfer_level, transfer_level), random.randint(-transfer_level, transfer_level))
+        img = noise(img, random.randint(0, noise_quantity), noise_deviation)
+        img = brightness(img, random.randint(100-brightness_level, 100+brightness_level))
+        img = blur(img, random.randint(0, blur_level))
+        img = img.convert('L')
+        
+        # Каждую степень 10 нам надо убрать ноль в имени класса
+        if i == j:
+            j *= 10
+            path2 = path2[:-1]
+        # Выводим процент готовых картинок
+        if i == ready:
+            ready += number_of_images//100
+            ready_percent += 1
+            update_msg(str(ready_percent) + "%")
+        
+        # Сохраняем изображение
+        path3 = path2 + str(i) + '.png'
+        img.save(path3)
+print('\n')
 	
 
 
