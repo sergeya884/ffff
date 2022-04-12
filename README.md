@@ -2,33 +2,20 @@
 
 Агафонов Сергей задача 5 на собеседование ИППИ АД.
 
+Все, что касается аугментации лежит в папке augmentation.
 
-random_eff.py основная программа, создание заданного числа изображений со случайной комбинацией эффектов.
+Пример ввода:
 
-perfect_car_numbers папка с идеальными цифрами из автомобильных номеров.
+![](https://github.com/sergeya884/img_augmentation/blob/main/photo/input.png)
 
-number папка с папками для готовых изображений по классам. 
+Примеры вывода (слабые настройки аугментации):
 
-perfect_numbers папака с идеальными цифрами с клавиатуры. 
+![](https://github.com/sergeya884/img_augmentation/blob/main/photo/1.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/2.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/3.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/4.png)
 
-test папка для тестовых измененных изображений. 
+Все, что касается классификатора в папке classifier.
 
-Пример. 
+Примеры из тестовой выборки
 
-![](https://github.com/sergeya884/img_augmentation/blob/main/tests/0.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/tests/43.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/tests/20.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/tests/49.png)
+![](https://github.com/sergeya884/img_augmentation/blob/main/photo/eight_03.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/nine_01.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/zero_02.png)
 
-Варианты изменения картинки:
-
-1)поворот вокруг центра : rotation.py
-
-2)параллельный перенос : transfer.py
-
-3)сжатие растяжение вертикально, горизонтально : rsize.py
-
-4)изменение яркости : brightness.py
-
-6)шум : noise.py
-
-7)размытие : blur.py
-
-8)сдвиг : shift.py
+Итоги обучения такие. После обучения с аугментацией процент правильных ответов 76, что весьма неплохо, учитывая простоту самой нейросети и наличия целых 10 классов. Однако обучение только на идеальных примерах дало тоже неплохой результат в 67 процентов правильных ответов. Мне кажется разница между подходами будет ощущаться сильнее если еще "поподкручивать" настройки аугментации и сделать меньше классов. Но все же аугментация работает и значительно улучшает результат.
