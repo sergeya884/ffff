@@ -3,19 +3,17 @@
 Агафонов Сергей задача 5 на собеседование ИППИ АД.
 
 
-random_eff.py основная программа, случайная комбинация эффектов.
+random_eff.py основная программа, создание заданного числа изображений со случайной комбинацией эффектов.
 
 perfect_car_numbers папка с идеальными цифрами из автомобильных номеров.
+
+number папка с папками для готовых изображений по классам. 
 
 perfect_numbers папака с идеальными цифрами с клавиатуры. 
 
 test папка для тестовых измененных изображений. 
 
-Пример. Ввод:
-
-![](https://github.com/sergeya884/img_augmentation/blob/main/perfect_number/5.bmp)
-
-Вывод:
+Пример. 
 
 ![](https://github.com/sergeya884/img_augmentation/blob/main/tests/0.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/tests/43.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/tests/20.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/tests/49.png)
 
