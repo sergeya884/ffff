@@ -4,14 +4,17 @@ import sys
 from PIL import Image, ImageFilter, ImageEnhance
 
 #НАСТРОЙКИ-----------------------
-width = 60                  # ширина картинки на выходе
-height = 100                # высота картинки на выходе
-shift_level = 80            # максимальный уровень сдвига в процентах
+width = 30                  # ширина картинки на выходе
+height = 50                 # высота картинки на выходе
+triangle_deviation = 20     # отклонение яркости в треугольных помехах
+triangle_quantity = 5       # количество треугольных помех
+direct_level = 80           # Отклонение яркости вертикально-горизонтального шума
+shift_level = 60            # максимальный уровень сдвига в процентах
 rotation_level = 5          # предельный угол поворота в градусах
 compr_stretch_level_x = 20  # максимальное сжатие по x в процентах от ширины 
 compr_stretch_level_y = 20  # максимальное сжатие по y в процентах от длины
 transfer_level = 20         # максимальный перенос в процентах от размеров
-noise_quantity = 40         # количество шума в процентах от количества пикселей 
+noise_quantity = 100        # количество шума в процентах от количества пикселей 
 noise_deviation = 80        # степень отклонения яркости цвета в шуме от 0 до 255
 brightness_level = 50       # максимальный уровень изменения яркости в процентах
 blur_level = 50             # максимальный уровень размытия в процентах
@@ -70,21 +73,21 @@ def brightness(img, brightness_level):
     return(enhancer.enhance(brightness_level/100))
 
 # Функция добавления случайного шума
-def noise(img, noise_quantity, noise_deviation):
+def rand_noise(img, noise_quantity, noise_deviation):
     img = img.convert('L')
     # Узнаем размеры исходного изображения
     width, height = img.size
-    for numpix in range(0, noise_quantity*width*height//100):
+    for numpix in range(0, noise_quantity * width * height//100):
         # Случайный пиксель
-        x=random.randint(2, img.size[0]-3)
-        y=random.randint(2, img.size[1]-3)
+        x=random.randint(0, img.size[0]-3)
+        y=random.randint(0, img.size[1]-3)
         # Узнаем яркость
         bright = img.getpixel((x, y))
         # Случайно меняем яркость в заданном пределе
         bright=random.randint(bright-noise_deviation,bright+noise_deviation)
         # Меняем яркость квадрата со стороной от 1 до 5 с пикселем в центре
-        for x_1 in range(x - random.randint(0, 2),x + random.randint(0, 2)):
-            for y_1 in range(y - random.randint(0,2),y + random.randint(0,2)):
+        for x_1 in range(x, x + random.randint(0, 3)):
+            for y_1 in range(y, y + random.randint(0, 3)):
                 img.putpixel((x_1, y_1), bright)
     return(img)
 
@@ -110,12 +113,125 @@ def shift(img, level):
     dst_img.paste(img, (j + level//2, 0), img)
     return(dst_img)
 
+# Функция рисования случайных треугольных затемнений
+def triangle(img, deviation, quantity):
+    img = img.convert('L')
+    width, height = img.size
+    
+    # Пиксель со случайним x
+    x_rand = random.randint(0, width)
+    brigh_thick = random.randint(0, x_rand)
+    bright = random.randint(-deviation, deviation)
+    for k in range(0, quantity):
+        j = random.randint(0, 3)
+        if(j == 0):
+            i = 0
+            for x in range(0, width):
+                i += 1
+                if(i > width): break
+                for y in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+        if(j == 1):
+            i = height
+            for x in range(0, width):
+                i -= 1
+                if(i < 0): break
+                for y in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+        if(j == 2):
+            i = 0
+            for y in range(0, height):
+                i += 1
+                if(i > width): break
+                for x in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+        if(j == 3):
+            i = width
+            for y in range(0, height):
+                i -= 1
+                if(i < 0): break
+                for x in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+    return(img)
+
+# Функция вертикально-горизонтальных помех
+def direct_noise(img, deviation):
+    img = img.convert('L')
+    width, height = img.size
+    bright = random.randint( - deviation, deviation)
+
+    # Горизонтальные помехи
+    for y in range(0, height):
+        for x in range(- random.randint(0, width), random.randint(0, width)):
+            img.putpixel((x, y), img.getpixel((x, y)) + bright)
+    # Вертикальные помехи
+    for x in range(0, width):
+        for y in range(- random.randint(0, height), random.randint(0, height)):
+            img.putpixel((x, y), img.getpixel((x, y)) + bright)
+    return(img)
+
+# Функция рисования случайных треугольных затемнений
+def triangle(img, deviation, quantity):
+    img = img.convert('L')
+    width, height = img.size
+    
+    # Пиксель со случайним x
+    x_rand = random.randint(0, width)
+    brigh_thick = random.randint(0, x_rand)
+    bright = random.randint(-deviation, deviation)
+    for k in range(0, quantity):
+        j = random.randint(0, 3)
+        if(j == 0):
+            i = 0
+            for x in range(0, width):
+                i += 1
+                if(i > width): break
+                for y in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+        if(j == 1):
+            i = height
+            for x in range(0, width):
+                i -= 1
+                if(i < 0): break
+                for y in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+        if(j == 2):
+            i = 0
+            for y in range(0, height):
+                i += 1
+                if(i > width): break
+                for x in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+        if(j == 3):
+            i = width
+            for y in range(0, height):
+                i -= 1
+                if(i < 0): break
+                for x in range(0, i):
+                    img.putpixel((x, y), img.getpixel((x, y)) + bright)
+    return(img)
+
+# Функция вертикально-горизонтальных помех
+def direct_noise(img, deviation):
+    img = img.convert('L')
+    width, height = img.size
+    bright = random.randint( - deviation, deviation)
+
+    # Горизонтальные помехи
+    for y in range(0, height):
+        for x in range(- random.randint(0, width), random.randint(0, width)):
+            img.putpixel((x, y), img.getpixel((x, y)) + bright)
+    # Вертикальные помехи
+    for x in range(0, width):
+        for y in range(- random.randint(0, height), random.randint(0, height)):
+            img.putpixel((x, y), img.getpixel((x, y)) + bright)
+    return(img)
+
 # Функция для вывода с заменой старой информации
 def update_msg(text):
     message = f'\r{text}'
     sys.stdout.write(message)
     sys.stdout.flush()
-
 
 path_to_perfect = input("Введите путь до изображений: ") + '/'
 number_of_images = int(input("Введите число изменненых изображений: "))+1;
@@ -142,12 +258,16 @@ for filename in os.listdir(path_to_perfect):
 
     # Циклическое сохранение случайно измененных параметров
     for i in range(1, number_of_images):
+        img = brightness(img, random.randint(100-brightness_level, 100+brightness_level))
+        img = triangle(img, random.randint(0, triangle_deviation), random.randint(0, triangle_quantity))
+        img = direct_noise(img, random.randint(0, direct_level))
         img = shift(img, random.randint(-shift_level, shift_level))
         img = rotation(img, random.randint(-rotation_level, rotation_level))
         img = compr_stretch(img, random.randint(-compr_stretch_level_x, compr_stretch_level_x), random.randint(-compr_stretch_level_y, compr_stretch_level_y))
         img = transfer(img, random.randint(-transfer_level, transfer_level), random.randint(-transfer_level, transfer_level))
         img = noise(img, random.randint(0, noise_quantity), noise_deviation)
         img = brightness(img, random.randint(100-brightness_level, 100+brightness_level))
+        img = triangle(img, random.randint(0, triangle_deviation), random.randint(0, triangle_quantity))
         img = blur(img, random.randint(0, blur_level))
         img = img.convert('L')
         
