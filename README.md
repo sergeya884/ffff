@@ -16,6 +16,6 @@
 
 Примеры из тестовой выборки
 
-![](https://github.com/sergeya884/img_augmentation/blob/main/photo/eight_03.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/nine_01.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/one_03.png)
+![](https://github.com/sergeya884/img_augmentation/blob/main/photo/five_01.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/nine_01.png) ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/one_03.png)
 
 Итоги обучения такие. После обучения с аугментацией процент правильных ответов 76, что весьма неплохо, учитывая простоту самой нейросети и наличия целых 10 классов. Однако обучение только на идеальных примерах дало тоже неплохой результат в 67 процентов правильных ответов. Мне кажется разница между подходами будет ощущаться сильнее если еще "поподкручивать" настройки аугментации и сделать меньше классов. Но все же аугментация работает и значительно улучшает результат.
