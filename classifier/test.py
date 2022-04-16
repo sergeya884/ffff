@@ -14,7 +14,7 @@ for filename in os.listdir(path):
 	image = cv2.imread(path + filename)
 	output = image.copy()
 	image = cv2.resize(image, (30, 50))
-	
+	image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 	# масштабируем значения пикселей к диапазону [0, 1]
 	image = image.astype("float") / 255.0
 	
