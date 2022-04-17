@@ -1,5 +1,6 @@
 import random
 import os
+import argparse
 import sys
 from PIL import Image, ImageFilter, ImageEnhance
 
@@ -19,7 +20,6 @@ noise_deviation = 60        # степень отклонения яркости
 brightness_level = 30       # максимальный уровень изменения яркости в процентах
 blur_level = 30             # максимальный уровень размытия в процентах
 #--------------------------------
-
 
 # Функция размытия изображения
 def blur(img,percent):
@@ -177,9 +177,19 @@ def update_msg(text):
     sys.stdout.write(message)
     sys.stdout.flush()
 
-path_to_perfect = input("Введите путь до изображений: ") + '/'
-number_of_images = int(input("Введите число изменненых изображений: "))+1;
-path_to_save = input("Введите название директории для хранения измененных изображений: ") + '/'
+# Задаем arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--img-dir", required=True,
+	help="path to input dataset of images")
+ap.add_argument("-n", "--number", required=True,
+	help="number of modified images")
+ap.add_argument("-s", "--save-dir", required=True,
+	help="directory for saving images")
+args = vars(ap.parse_args())
+
+path_to_perfect = args["img_dir"] + '/'
+number_of_images = int(args["number"]) + 1;
+path_to_save = args["save_dir"] + '/'
 os.mkdir(path_to_save)
 
 for filename in os.listdir(path_to_perfect):
@@ -204,7 +214,6 @@ for filename in os.listdir(path_to_perfect):
     # Циклическое сохранение случайно измененных параметров
     for i in range(1, number_of_images):
         img = per_img
-        #img.show()
         img = brightness(img, random.randint(100-brightness_level, 100+brightness_level))
         img = triangle(img, random.randint(0, triangle_deviation), random.randint(0, triangle_quantity))
         img = direct_noise(img, random.randint(0, direct_level))

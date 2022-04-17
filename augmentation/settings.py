@@ -1,11 +1,10 @@
 import random
 import os
-import sys
 from PIL import Image, ImageFilter, ImageEnhance
 
 #НАСТРОЙКИ-----------------------
-width = 60                  # ширина картинки на выходе
-height = 100                # высота картинки на выходе
+width = 30                  # ширина картинки на выходе
+height = 50                 # высота картинки на выходе
 triangle_deviation = 20     # отклонение яркости в треугольных помехах
 triangle_quantity = 5       # количество треугольных помех
 direct_level = 80           # Отклонение яркости вертикально-горизонтального шума
@@ -14,7 +13,7 @@ rotation_level = 5          # предельный угол поворота в 
 compr_stretch_level_x = 20  # максимальное сжатие по x в процентах от ширины 
 compr_stretch_level_y = 20  # максимальное сжатие по y в процентах от длины
 transfer_level = 20         # максимальный перенос в процентах от размеров
-noise_quantity = 60         # количество шума в процентах от количества пикселей 
+noise_quantity = 70         # количество шума в процентах от количества пикселей 
 noise_deviation = 60        # степень отклонения яркости цвета в шуме от 0 до 255
 brightness_level = 30       # максимальный уровень изменения яркости в процентах
 blur_level = 30             # максимальный уровень размытия в процентах
@@ -169,12 +168,6 @@ def direct_noise(img, deviation):
         for y in range(- random.randint(0, height), random.randint(0, height)):
             img.putpixel((x, y), img.getpixel((x, y)) + bright)
     return(img)
-
-# Функция для вывода с заменой старой информации
-def update_msg(text):
-    message = f'\r{text}'
-    sys.stdout.write(message)
-    sys.stdout.flush()
 
 img = Image.open('perfect_car_number/eight.png')
 img = img.resize((width, height))
