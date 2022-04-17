@@ -36,7 +36,7 @@
 
 Для оценки эффективности были в ручную вырезанны цифры номеров автомобилей с реальных фотографий
 
-![](https://github.com/sergeya884/img_augmentation/blob/main/photo/test_files)
+![](https://github.com/sergeya884/img_augmentation/blob/main/photo/test_files.png)
 
 Идеальные изображения ![](https://github.com/sergeya884/img_augmentation/blob/main/photo/in.png) 
 
