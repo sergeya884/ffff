@@ -1,7 +1,7 @@
-# set the matplotlib backend so figures can be saved in the background
+# Импортируем бэкенд Agg из matplotlib для сохранения графиков на диск
 import matplotlib
 matplotlib.use("Agg")
-# import the necessary packages
+# Подключаем необходимые пакеты
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
@@ -17,10 +17,10 @@ import pickle
 import cv2
 import os
 
-width = 30                  # ширина картинки на выходе
-height = 50                # высота картинки на выходе
+width = 30     # ширина картинки на выходе
+height = 50    # высота картинки на выходе
 
-# construct the argument parser and parse the arguments
+# Создаём парсер аргументов и передаём их
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--dataset", required=True,
 	help="path to input dataset of images")
@@ -32,71 +32,66 @@ ap.add_argument("-p", "--plot", required=True,
 	help="path to output accuracy/loss plot")
 args = vars(ap.parse_args())
 
-# initialize the data and labels
+# Инициализируем данные и метки
 print("[INFO] loading images...")
 data = []
 labels = []
-# grab the image paths and randomly shuffle them
+# Берём пути к изображениям и рандомно перемешиваем
 imagePaths = sorted(list(paths.list_images(args["dataset"])))
 random.seed(42)
 random.shuffle(imagePaths)
-# loop over the input images
+# Цикл по изображениям
 for imagePath in imagePaths:
-    # load the image, resize the image to be 32x32 pixels (ignoring
-    # aspect ratio), flatten the image into 32x32x3=3072 pixel image
-    # into a list, and store the image in the data list
+    # Загружаем изображение, меняем размер, сглаживаем его, 
+    # изменённое изображение добавляем в список
     image = cv2.imread(imagePath)
     image = cv2.resize(image, (width, height)).flatten()
     data.append(image)
-    # extract the class label from the image path and update the
-    # labels list
+    # Извлекаем метку класса из пути к изображению и обновляем список меток
     label = imagePath.split(os.path.sep)[-2]
     labels.append(label)
 	
-# scale the raw pixel intensities to the range [0, 1]
+# Масштабируем интенсивности пикселей в диапазон [0, 1]
 data = np.array(data, dtype="float") / 255.0
 labels = np.array(labels)
 
-# partition the data into training and testing splits using 75% of
-# the data for training and the remaining 25% for testing
+# Разбиваем данные на обучающую и тестовую выборки, используя 75% 
+# данных для обучения и оставшиеся 25% для тестирования
 (trainX, testX, trainY, testY) = train_test_split(data,
 	labels, test_size=0.25, random_state=42)
 
-# convert the labels from integers to vectors (for 2-class, binary
-# classification you should use Keras' to_categorical function
-# instead as the scikit-learn's LabelBinarizer will not return a
-# vector)
+# Конвертируем метки из целых чисел в векторы
 lb = LabelBinarizer()
 trainY = lb.fit_transform(trainY)
 testY = lb.transform(testY)
 
-# define the 3072-1024-512-3 architecture using Keras
+# Определим архитектуру width*height*3-width*height-width*height//2-3 с помощью Keras
 model = Sequential()
 model.add(Dense(width*height, input_shape=(width*height*3,), activation="sigmoid"))
 model.add(Dense(width*height//2, activation="sigmoid"))
 model.add(Dense(len(lb.classes_), activation="softmax"))
 
-# initialize our initial learning rate and # of epochs to train for
+# Инициализируем скорость обучения и общее число эпох
 INIT_LR = 0.01
 EPOCHS = 80
-# compile the model using SGD as our optimizer and categorical
-# cross-entropy loss (you'll want to use binary_crossentropy
-# for 2-class classification)
+# Компилируем модель, используя SGD как оптимизатор и категориальную
+# кросс-энтропию в качестве функции потерь 
 print("[INFO] training network...")
 opt = SGD(lr=INIT_LR)
 model.compile(loss="categorical_crossentropy", optimizer=opt,
 	metrics=["accuracy"])
 	
-# train the neural network
+# Обучаем нейросеть
 H = model.fit(x=trainX, y=trainY, validation_data=(testX, testY),
 	epochs=EPOCHS, batch_size=32)
 	
-# evaluate the network
+# Оцениваем нейросеть
 print("[INFO] evaluating network...")
 predictions = model.predict(x=testX, batch_size=32)
 print(classification_report(testY.argmax(axis=1),
 	predictions.argmax(axis=1), target_names=lb.classes_))
-# plot the training loss and accuracy
+
+# Строим графики потерь и точности
 N = np.arange(0, EPOCHS)
 plt.style.use("ggplot")
 plt.figure()
@@ -110,7 +105,7 @@ plt.ylabel("Loss/Accuracy")
 plt.legend()
 plt.savefig(args["plot"])
 
-# save the model and label binarizer to disk
+# Сохраняем модель и бинаризатор меток на диск
 print("[INFO] serializing network and label binarizer...")
 model.save(args["model"], save_format="h5")
 f = open(args["label_bin"], "wb")

@@ -29,7 +29,6 @@ for filename in os.listdir(path):
     	
     # делаем предсказание на изображении
     preds = model.predict(image)
-    #print(preds)
     	
     # находим индекс метки класса с наибольшей вероятностью соответствия
     i = preds.argmax(axis=1)[0]
@@ -41,4 +40,4 @@ for filename in os.listdir(path):
     if label == filename[:-7]: 
         print('Ok')
         pers = pers + 1
-    print(pers/46)
+    print(pers)
